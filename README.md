@@ -1,227 +1,70 @@
-RISC-V 32-bit Single-Cycle Processor (RV32I + RV32M)
+# RISC-V 32-bit Single-Cycle Processor (RV32I + RV32M)
 
-This repository contains a fully functional RISC-V 32-bit single-cycle CPU implemented in Verilog/SystemVerilog.
-The core supports the RV32I base instruction set and the RV32M extension (MUL, DIV, REM).
-All instructions execute in one clock cycle (no pipeline stages).
+![Language](https://img.shields.io/badge/Language-Verilog%2FSystemVerilog-blue)
+![Platform](https://img.shields.io/badge/Platform-Xilinx%20Vivado-red)
+![Architecture](https://img.shields.io/badge/Architecture-RISC--V-green)
+![License](https://img.shields.io/badge/License-MIT-orange)
+![Status](https://img.shields.io/badge/Status-Synthesis%20Ready-brightgreen)
 
-The design is FPGA-friendly and synthesizes cleanly on Xilinx Vivado.
+## 📌 Overview
 
-Features
+This repository contains a **RISC-V 32-bit single-cycle CPU** implemented in Verilog/SystemVerilog.  
+The core implements the **RV32I** base integer instruction set (with a currently supported subset) and the **RV32M** extension (multiplication, division, remainder).
 
-Single-cycle RISC-V CPU
+The processor executes each instruction in a **single clock cycle**. The design focuses on a **modular architecture**, **clean RTL style**, and **FPGA synthesis** using Xilinx Vivado. Instruction memory is currently **hardcoded inside `inst_mem.v`**, so no external hex file is required.
 
-RV32I Instruction Set:
+## ✨ Features
 
-ADD, SUB, AND, OR, XOR
+### Supported Instruction Sets (Current Version)
 
-SLL, SRL, SRA
+* **RV32I Base Integer Set (implemented subset):**
+  * **Arithmetic / Logic:**  
+    `ADD`, `SUB`, `AND`, `OR`, `XOR`
+  * **Shifts:**  
+    `SLL`, `SRL`, `SRA`
+  * **Comparison:**  
+    `SLT`, `SLTU`
+  * **Immediate / Upper:**  
+    `ADDI`, `LUI`, `AUIPC`
+  * **Branching:**  
+    `BEQ`, `BNE`  
+    > ALU supports comparison operations; other branch types like `BLT/BGE/BLTU/BGEU` can be added by extending the control logic.
+  * **Jumps:**  
+    `JAL`, `JALR`
+  * **Memory:**  
+    `LW`, `SW`
 
-SLT, SLTU
+* **RV32M Extension:**
+  * `MUL`, `DIV`, `REM`
 
-LUI, AUIPC
+### Core Architecture Highlights
 
-BEQ, BNE, BLT, BGE, BLTU, BGEU
+* **Single-Cycle Execution:**  
+  Classic IF–ID–EX–MEM–WB flow implemented in a **single clock cycle** without pipeline stages.
+* **Harvard-Style Memory:**  
+  Separate **Instruction Memory (ROM)** and **Data Memory (RAM)** allow independent code and data access.
+* **Register File:**  
+  Standard **32 x 32-bit** register file (`x0` hardwired to zero) with dual read ports and single write port.
+* **Custom ALU Design:**  
+  ALU controlled via a **5-bit `alu_op` code**, supporting arithmetic, logic, shift, comparison, branch compare, and RV32M operations, with flags:
+  * Zero (Z), Negative (N), Carry (C), Overflow (V)
+* **Pure RTL, No IP Cores:**  
+  Implemented entirely in plain Verilog/SystemVerilog, portable to other FPGA vendors or ASIC flows.
 
-JAL, JALR
+## 📂 Directory Structure
 
-LW, SW
-
-RV32M Extension:
-
-MUL, DIV, REM
-
-Hardcoded Instruction Memory (no hex files required)
-
-Register File (32 registers, x0 hardwired to zero)
-
-ALU with Flags (Zero, Negative, Carry, Overflow)
-
-Data Memory for load/store
-
-Top-Level Integration with instruction fetch, decode, execute, mem, and writeback
-
-Fully tested using Vivado testbenches
-
-Directory Structure
+```text
 RiscV-32bit/
 │
-├── inst_mem.v             # Hardcoded instruction memory (ROM)
-├── instructiondecode.v    # Instruction decoder and immediate generator
-├── controlunit.v          # Control logic and ALU op generation
-├── alu_module.v           # Arithmetic Logic Unit (RV32I + RV32M)
-├── register_file.v        # 32-register file with read/write ports
-├── memory_unit.v          # Data memory (load/store)
-├── top_module.v           # Complete RISC-V processor integration
+├── inst_mem.v             # ~1 KB Instruction ROM with hardcoded program
+├── instructiondecode.v    # Instruction decoder + immediate generation
+├── controlunit.v          # Main control: RegWrite, MemRead/Write, ALUSrc, MemToReg, Branch, JAL, alu_op
+├── alu_module.v           # ALU: RV32I + RV32M operations, flag generation
+├── register_file.v        # 32 x 32-bit register file (dual read, single write)
+├── memory_unit.v          # ~1 KB Data memory for LW/SW
+├── top_module.v           # Top-level RISC-V CPU integration (single-cycle core)
 │
-└── testbenches/           # Simulation testbenches for each module
-
-CPU Architecture Overview
-
-The CPU follows the classical five RISC-V stages, but executes them all in a single clock cycle:
-
-Instruction Fetch (IF)
-
-Reads instruction from ROM using PC
-
-PC increments by 4 or jumps for branch/jal/jalr
-
-Instruction Decode (ID)
-
-Extracts opcode, funct3, funct7
-
-Reads rs1 and rs2 from register file
-
-Generates immediate based on instruction type
-
-Execute (EX)
-
-ALU performs required operation
-
-Branch decisions are computed here
-
-ALU flags (Zero, Negative, Carry, Overflow) generated
-
-Memory (MEM)
-
-Loads and stores using data memory
-
-LW, SW supported
-
-Writeback (WB)
-
-ALU or memory result written to rd
-
-x0 always remains zero
-
-Hardcoded Program (Built-In ROM)
-
-The instruction memory is entirely hardcoded:
-
-No hex files
-
-No $readmemh
-
-Works directly in synthesis and simulation
-
-Example program included:
-
-ADDI, ADD, SUB
-
-Logic operations
-
-Shift operations
-
-SLT/SLTU
-
-MUL, DIV, REM
-
-Branch instructions (BEQ, BNE, BLT, BGE, etc.)
-
-JAL, JALR
-
-LUI, AUIPC
-
-ECALL, EBREAK
-
-Infinite loop at the end
-
-You can modify inst_mem.v to add your own program.
-
-Module Interaction Diagram
-               +-----------------------+
-               |     inst_mem.v        |
- PC ---------> |  Instruction Fetch    | ---> instruction
-               +-----------------------+
-
-               +-----------------------+
- instruction -> |  Instruction Decode  |
-                |  opcode, rs1, rs2    | ---> control signals
-                |  immediate           |
-               +-----------------------+
-
-               +-----------------------+
- read_data1 -> |                       |
- read_data2 -> |         ALU           | ---> result
- immediate --> |                       |
-               +-----------------------+
-
-               +-----------------------+
-               |      Data Memory      |
- result -----> |   LW / SW operations  | ---> mem_read_data
-               +-----------------------+
-
-               +-----------------------+
-               |     Register File     |
- rd, result -->|  32 registers (x0=0)  |
-               +-----------------------+
-
-How to Simulate
-
-In Vivado:
-
-Create a new project
-
-Add all .v files
-
-Add the testbench from /testbenches/
-
-Run Simulation
-
-Every module has an isolated testbench, and there is a full top-level testbench.
-
-How to Synthesize
-
-Open Vivado
-
-Create RTL project
-
-Add all Verilog files
-
-Select your FPGA board
-
-Run Synthesis and Implementation
-
-This design does not require:
-
-Memory hex files
-
-IP cores
-
-DDR
-
-AXI
-
-Everything is pure RTL logic.
-
-Extending the CPU
-
-You can extend this CPU with:
-
-Hazard Detection Unit
-
-Forwarding Unit
-
-5-stage or 7-stage pipeline
-
-CSR registers
-
-Interrupt support
-
-RV32A (Atomic Instructions)
-
-Cache memory
-
-UART/LED/Display output
-
-If you want a pipeline upgrade, ask:
-
-Make my CPU a 5-stage pipelined RISC-V.
-
-Author
-
-Varada Govind Aakula
-B.Tech ECE, IIIT Allahabad
-
-License
-
-MIT License (or choose any license you prefer)
+└── testbenches/           # (Optional) Simulation files
+    ├── tb_top_module.v    # Full CPU testbench
+    ├── tb_alu_module.v    # ALU unit test
+    └── tb_register_file.v # Register file unit test
