@@ -1,0 +1,17 @@
+# compile verilog/system verilog design source files
+verilog xil_defaultlib  \
+"../../../../RiscV-32bit.srcs/sources_1/new/alu.v" \
+"../../../../RiscV-32bit.srcs/sources_1/new/control_unit.v" \
+"../../../../RiscV-32bit.srcs/sources_1/new/data_mem.v" \
+"../../../../RiscV-32bit.srcs/sources_1/new/inst_mem.v" \
+"../../../../RiscV-32bit.srcs/sources_1/new/instr_decode.v" \
+"../../../../RiscV-32bit.srcs/sources_1/new/pc.v" \
+"../../../../RiscV-32bit.srcs/sources_1/new/reg_file.v" \
+"../../../../RiscV-32bit.srcs/sources_1/new/riscv_core.v" \
+"../../../../RiscV-32bit.srcs/sim_1/new/tb_riscv_core.v" \
+
+# compile glbl module
+verilog xil_defaultlib "glbl.v"
+
+# Do not sort compile order
+nosort

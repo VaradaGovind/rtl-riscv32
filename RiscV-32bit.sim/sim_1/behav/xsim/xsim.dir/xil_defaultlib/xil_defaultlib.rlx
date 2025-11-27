@@ -1,0 +1,14 @@
+0.7
+2020.2
+Nov  8 2024
+22:36:57
+C:/Users/Varada Govind/Documents/GitHub/rtl-riscv32/RiscV-32bit.sim/sim_1/behav/xsim/glbl.v,1724786425,verilog,,,,glbl,,,,,,,,
+C:/Users/Varada Govind/Documents/GitHub/rtl-riscv32/RiscV-32bit.srcs/sim_1/new/tb_riscv_core.v,1764224506,verilog,,,,tb_riscv_core,,,,,,,,
+C:/Users/Varada Govind/Documents/GitHub/rtl-riscv32/RiscV-32bit.srcs/sources_1/new/alu.v,1764224261,verilog,,C:/Users/Varada Govind/Documents/GitHub/rtl-riscv32/RiscV-32bit.srcs/sources_1/new/control_unit.v,,alu,,,,,,,,
+C:/Users/Varada Govind/Documents/GitHub/rtl-riscv32/RiscV-32bit.srcs/sources_1/new/control_unit.v,1764226754,verilog,,C:/Users/Varada Govind/Documents/GitHub/rtl-riscv32/RiscV-32bit.srcs/sources_1/new/data_mem.v,,control_unit,,,,,,,,
+C:/Users/Varada Govind/Documents/GitHub/rtl-riscv32/RiscV-32bit.srcs/sources_1/new/data_mem.v,1764224183,verilog,,C:/Users/Varada Govind/Documents/GitHub/rtl-riscv32/RiscV-32bit.srcs/sources_1/new/inst_mem.v,,data_mem,,,,,,,,
+C:/Users/Varada Govind/Documents/GitHub/rtl-riscv32/RiscV-32bit.srcs/sources_1/new/inst_mem.v,1764224121,verilog,,C:/Users/Varada Govind/Documents/GitHub/rtl-riscv32/RiscV-32bit.srcs/sources_1/new/instr_decode.v,,inst_mem,,,,,,,,
+C:/Users/Varada Govind/Documents/GitHub/rtl-riscv32/RiscV-32bit.srcs/sources_1/new/instr_decode.v,1764224138,verilog,,C:/Users/Varada Govind/Documents/GitHub/rtl-riscv32/RiscV-32bit.srcs/sources_1/new/pc.v,,instr_decode,,,,,,,,
+C:/Users/Varada Govind/Documents/GitHub/rtl-riscv32/RiscV-32bit.srcs/sources_1/new/pc.v,1764222428,verilog,,C:/Users/Varada Govind/Documents/GitHub/rtl-riscv32/RiscV-32bit.srcs/sources_1/new/reg_file.v,,pc,,,,,,,,
+C:/Users/Varada Govind/Documents/GitHub/rtl-riscv32/RiscV-32bit.srcs/sources_1/new/reg_file.v,1764224157,verilog,,C:/Users/Varada Govind/Documents/GitHub/rtl-riscv32/RiscV-32bit.srcs/sources_1/new/riscv_core.v,,reg_file,,,,,,,,
+C:/Users/Varada Govind/Documents/GitHub/rtl-riscv32/RiscV-32bit.srcs/sources_1/new/riscv_core.v,1764224290,verilog,,C:/Users/Varada Govind/Documents/GitHub/rtl-riscv32/RiscV-32bit.srcs/sim_1/new/tb_riscv_core.v,,riscv_core,,,,,,,,
