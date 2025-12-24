@@ -37,6 +37,7 @@ module alu (
                 c_r=tmp[32];
                 v_r=(a[31]!=b[31])&&(result[31]!=a[31]);
             end
+            
             5'b00101:result=a&b;
             5'b00100:result=a|b;
             5'b00110:result=a^b;
@@ -50,6 +51,7 @@ module alu (
             5'b10011:result=(b!=0)?$signed(a)%$signed(b):0;
             5'b01010,
             5'b01011:begin
+                
                 tmp={1'b0,a}+{1'b0,~b}+33'd1;
                 result=tmp[31:0];
                 c_r=tmp[32];
