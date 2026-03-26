@@ -54,3 +54,35 @@ lui x6, 0x00005      # Load upper LED pattern
 addi x6, x6, 0x555   # Add lower LED pattern (x6 = 0x5555)
 sw x6, 0(x5)         # Store pattern to physical LEDs
 jal x0, 0            # Infinite loop to maintain state
+```
+
+---
+
+## 📂 Directory Structure
+```
+RiscV-32bit/
+│
+├── src/
+│   ├── nexys4_top.v          # Top-level wrapper with clock divider & MMIO
+│   ├── riscv_core.v          # CPU datapath and integration
+│   ├── alu.v                 # Arithmetic Logic Unit
+│   ├── control_unit.v        # Instruction decoding and control signals
+│   ├── instr_decode.v        # Immediate generation
+│   ├── reg_file.v            # 32×32 Register File
+│   ├── pc.v                  # Program Counter
+│   ├── inst_mem.v            # Instruction Memory (Hardcoded test program)
+│   └── data_mem.v            # Data Memory
+│
+├── constraints/
+│   └── nexys4_ddr.xdc        # Physical pin mapping and timing constraints
+│
+├── sim/
+│   └── tb_riscv_core.v       # Testbench for datapath and MMIO verification
+│
+├── images/                   # Architecture diagrams + waveforms
+│   ├── Micro-Arch.png        
+│   ├── Schematic.png         
+│   └── Test_Bench_Result.png 
+│
+└── docs/
+    └── Reference_Paper.pdf   # Included architectural reference
