@@ -1,26 +1,30 @@
-# RISC-V 32-bit Single-Cycle Processor (RV32I + RV32M)
+# 💻 RISC-V 32-bit Single-Cycle Processor
 
-![Language](https://img.shields.io/badge/Language-Verilog%2FSystemVerilog-blue)
+![Language](https://img.shields.io/badge/Language-Verilog-blue)
 ![Platform](https://img.shields.io/badge/Platform-Xilinx%20Vivado-red)
-![Architecture](https://img.shields.io/badge/Architecture-RISC--V-green)
-![License](https://img.shields.io/badge/License-MIT-orange)
+![Target](https://img.shields.io/badge/Target-Artix--7%20(Nexys%204)-orange)
+![License](https://img.shields.io/badge/License-MIT-green)
 ![Status](https://img.shields.io/badge/Status-Synthesis%20Ready-brightgreen)
 
 ## 📌 Overview
 
-This project implements a **RISC-V 32-bit single-cycle processor** using pure Verilog/SystemVerilog.  
-The entire architecture, ALU design, and control logic are created **based on the research paper included in this repository**:
+This project implements a highly optimized **32-bit RISC-V single-cycle soft-core** in pure Verilog. Originally based on [Design and Implementation of 32-bit RISC-V Processor Using Verilog](docs/Reference_Paper.pdf), the architecture has been heavily modified and constrained for physical silicon synthesis on the **Xilinx Artix-7 FPGA (Nexys 4 DDR)**.
 
-📄 **[Design and Implementation of 32-bit RISC-V Processor Using Verilog](Reference_Paper.pdf)** *(Click to view the full paper — PDF included inside the repository.)*
-
-All microarchitecture diagrams, simulation results, and reference tables are also provided in the **images/** directory and inside the research paper.
-
-The CPU supports the **RV32I** base instruction set and the **RV32M** extension.  
-Instruction memory is hardcoded for FPGA testing, requiring **no hex files**.
+The CPU supports the **RV32I** base integer instruction set and features a custom **Memory-Mapped I/O (MMIO)** architecture, allowing compiled RISC-V assembly to natively control physical board peripherals.
 
 ---
 
-## ✨ Features
+## 📊 Hardware Utilization & Metrics
+Synthesized and implemented using Xilinx Vivado for the `xc7a100tcsg324-1` part. The core is highly optimized for area and easily meets 100 MHz onboard timing constraints.
+
+* **Look-Up Tables (LUTs):** 300 (< 1%)
+* **Registers (Flip-Flops):** 117 (< 1%)
+* **Timing (WNS):** +8.161 ns (Met constraints)
+* **Total On-Chip Power:** 1.888 W
+
+---
+
+## ✨ Architectural Features
 
 ### ✔ RV32I Base Integer Set
 * **Arithmetic / Logic:** `ADD`, `SUB`, `AND`, `OR`, `XOR`
@@ -30,71 +34,23 @@ Instruction memory is hardcoded for FPGA testing, requiring **no hex files**.
 * **Branches:** `BEQ`, `BNE`
 * **Jumps:** `JAL`, `JALR`
 * **Memory:** `LW`, `SW`
+*(Note: Complex combinational instructions like DIV/REM were removed to meet strict single-cycle synthesis timing paths).*
 
-### ✔ RV32M Extension
-* **Multiplication:** `MUL`
-* **Division:** `DIV`
-* **Remainder:** `REM`
-
----
-
-## 🧠 Hardware Architecture
-
-The CPU is implemented **directly following the architecture described in the research paper** stored in this repository.
-
-### 🔄 Datapath Flow
-The processor executes instructions in **one clock cycle** using the classic RISC-V datapath stages:
-1.  **Instruction Fetch (IF)**
-2.  **Instruction Decode (ID)**
-3.  **Execute (EX)**
-4.  **Memory (MEM)**
-5.  **Write Back (WB)**
-
-All of these are implemented as combinational logic and integrated in the `top_module.v`.
-
-### 📷 Microarchitecture & Schematics
-Detailed diagrams included inside the repository:
-
-**Micro-Architecture Overview:**
-![Micro-Architecture](images/Micro-Arch.png)
-
-**Core Circuit Schematic:**
-![Schematic](images/Schematic.png)
+### ✔ Hardware-Software Interface
+* **Memory-Mapped I/O (MMIO):** Custom I/O register mapped to address `0x00007000` to drive 16 onboard LEDs directly via Store Word (`sw`) instructions.
+* **Clock Management:** Integrated clock divider scaling the 100 MHz physical board oscillator to a stable 12.5 MHz system clock.
+* **Standalone Execution:** Instruction memory is initialized natively in the RTL (`inst_mem.v`), requiring no external hex files during the Vivado build process.
 
 ---
 
-## 🧪 Simulation Results
+## 🚀 Running the Hardware Test Program
 
-Simulation waveforms are provided to verify the correctness of the datapath and control logic.
+The instruction memory comes pre-loaded with a machine-code payload that tests the MMIO by writing an alternating pattern (`0x5555` / `0101010101010101`) to the physical LEDs on the Nexys 4 board.
 
-### 📊 Verification
-The simulation results cover the following critical tests:
-* **ALU Operations:** Verification of integer arithmetic and logic.
-* **Register File:** Read/Write consistency checks.
-* **Control Flow:** Branch (`BEQ`, `BNE`) and Jump (`JAL`, `JALR`) evaluation.
-* **Memory Access:** Load (`LW`) and Store (`SW`) cycle analysis.
-
-![Test Bench Results](images/Test_Bench_Result.png)
-
----
-
-## 📂 Directory Structure
-
-```text
-RiscV-32bit/
-│
-├── inst_mem.v                # Hardcoded instruction ROM
-├── instructiondecode.v       # Decoder + Immediate generator
-├── controlunit.v             # Main control logic
-├── alu_module.v              # ALU (RV32I + RV32M)
-├── register_file.v           # 32×32 register file
-├── memory_unit.v             # Data memory (LW/SW)
-├── top_module.v              # Integrated single-cycle CPU
-│
-├── images/                   # Architecture diagrams + waveforms
-│   ├── Micro-Arch.png        # Processor Micro-Architecture
-│   ├── Schematic.png         # Circuit Design Schematic
-│   └── Test_Bench_Result.png # Simulation Waveforms
-│
-└── docs/
-    └── Reference_Paper.pdf   # Included research paper
+**Assembly Payload:**
+```assembly
+lui x5, 0x00007      # Load MMIO base address (0x00007000)
+lui x6, 0x00005      # Load upper LED pattern
+addi x6, x6, 0x555   # Add lower LED pattern (x6 = 0x5555)
+sw x6, 0(x5)         # Store pattern to physical LEDs
+jal x0, 0            # Infinite loop to maintain state
